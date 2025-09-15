@@ -1,0 +1,1182 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1-SvjlBkT-LY_iJtBGZdIRWWtnx6oQnNDDLsMzw18i-I",
+          "mode": "list",
+          "cachedResultName": "Team 6 Dataset - Helpdesk : Tickets / Interactions",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-SvjlBkT-LY_iJtBGZdIRWWtnx6oQnNDDLsMzw18i-I/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Tickets",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-SvjlBkT-LY_iJtBGZdIRWWtnx6oQnNDDLsMzw18i-I/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -16,
+        -96
+      ],
+      "id": "5790a1c8-0bc8-4b05-bdb3-e82f0b0b695f",
+      "name": "Get row(s) in sheet",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5WKalPorCPHYl0WM",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -272,
+        -96
+      ],
+      "id": "53a27ddb-cb45-46b3-ab06-b6c74cfe42ed",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "function cleanDescription(desc) {\n  if (!desc) return '';\n  return String(desc).replace(/<[^>]*>/g, '').replace(/\\s+/g, ' ').trim();\n}\n\nfunction normalizeStage(stage) {\n  const t = String(stage).toLowerCase();\n  if (t.includes('nouveau') || t.includes('new')) return 'new';\n  if (t.includes('in progress') || t.includes('en cours')) return 'in_progress';\n  if (t.includes('fermé') || t.includes('closed')) return 'closed';\n  return 'new';\n}\n\nreturn items.map(item => {\n  const r = item.json;\n  return {\n    json: {\n      ...r,\n      description_clean: cleanDescription(r.description),\n      stage_norm: normalizeStage(r.stage_name)\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        -96
+      ],
+      "id": "1de57392-ef5e-41e8-ac31-6e1a6d0a2e0d",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1-SvjlBkT-LY_iJtBGZdIRWWtnx6oQnNDDLsMzw18i-I",
+          "mode": "list",
+          "cachedResultName": "Team 6 Dataset - Helpdesk : Tickets / Interactions",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-SvjlBkT-LY_iJtBGZdIRWWtnx6oQnNDDLsMzw18i-I/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Tickets",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-SvjlBkT-LY_iJtBGZdIRWWtnx6oQnNDDLsMzw18i-I/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "description_clean": "={{ $json.description_clean }}",
+            "stage_norm": "={{ $json.stage_norm }}",
+            "auto_priority": "={{ $json.auto_priority }}",
+            "sentiment_label": "={{ $json.sentiment_label }}",
+            "auto_team": "={{ $json.auto_team }}",
+            "ticket_id": "={{ $json.ticket_id }}"
+          },
+          "matchingColumns": [
+            "ticket_id"
+          ],
+          "schema": [
+            {
+              "id": "ticket_id",
+              "displayName": "ticket_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ticket_subject",
+              "displayName": "ticket_subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "customer",
+              "displayName": "customer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "customer_email",
+              "displayName": "customer_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "team_name",
+              "displayName": "team_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "priority",
+              "displayName": "priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "create_date",
+              "displayName": "create_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "close_date",
+              "displayName": "close_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "stage_name",
+              "displayName": "stage_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "description_clean",
+              "displayName": "description_clean",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "stage_norm",
+              "displayName": "stage_norm",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "auto_priority",
+              "displayName": "auto_priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sentiment_label",
+              "displayName": "sentiment_label",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "auto_team",
+              "displayName": "auto_team",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        400,
+        -96
+      ],
+      "id": "52217d3b-9200-498c-98b9-180d1c575acf",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5WKalPorCPHYl0WM",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "aa4242f9-cd6d-4afa-8aef-75222095a480",
+              "leftValue": "={{$json.stage_norm}}",
+              "rightValue": "new",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        608,
+        -96
+      ],
+      "id": "cbb5a3ac-912a-492c-98e7-40b050e2c7c9",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        4208,
+        -16
+      ],
+      "id": "23f540d8-4d34-4f68-8db0-61355c3ccd29"
+    },
+    {
+      "parameters": {
+        "content": "## Pré-traitement \n- Nettoyage de la description\n- Normalisation du statut (stage_name)\n- Préparation des colonnes d’analyse ( auto_priority | sentiment_label | auto_team )\n",
+        "height": 144,
+        "width": 352
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        64,
+        -240
+      ],
+      "id": "5572c0db-3325-4ae1-b010-5da7b1e3c83b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Tu es un système de classification des tickets Helpdesk.\nAnalyse le ticket suivant :\nClient: {{ $('Get row(s) in sheet').item.json.customer }}\nTicket ID: {{ $('Get row(s) in sheet').item.json.ticket_id }}\nDescription: {{ $('Get row(s) in sheet').item.json.description_clean }}\nPriorité d'origine: {{ $('Get row(s) in sheet').item.json.priority }}\n\nRéponds uniquement en JSON strict :\n{\n  \"sentiment_label\": \"positive|neutral|negative\",\n  \"auto_priority\": \"Low|Medium|High|Urgent\",\n  \"auto_team\": \"Intégration 1|Intégration 2|DevOps\"\n}\n\nRègles:\n- sentiment_label = negative seulement si mots forts (erreur, bloqué, panne...).\n- auto_priority = Urgent seulement si mots forts (urgent, blocage, panne critique...).\n- auto_team selon :\n   Technique → Intégration 2\n   Fonctionnelle → Intégration 1\n   Sinon → DevOps.\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        1280,
+        -288
+      ],
+      "id": "0aa29ebb-73b7-4302-8245-c0cd0356e741",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        -96
+      ],
+      "id": "27764897-ba6f-4146-b9ec-18b4721e6e71",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "gO4VtlTKlZkeidGA",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let raw = $json.text || '';\nraw = raw.replace(/\\n/g, '').trim();\nconst matches = raw.match(/\\{[\\s\\S]*?\\}/g);\nconst jsonStr = matches ? matches[matches.length - 1] : '{}';\n\nlet parsed = {};\ntry {\n  parsed = JSON.parse(jsonStr);\n} catch (e) {\n  parsed = {};\n}\n\nreturn [{\n  json: {\n    ...$json,\n    sentiment_label: parsed.sentiment_label,\n    auto_priority: parsed.auto_priority,\n    auto_team: parsed.auto_team\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1664,
+        -304
+      ],
+      "id": "396137ae-ff22-4e90-bca8-028f48833ea8",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1-SvjlBkT-LY_iJtBGZdIRWWtnx6oQnNDDLsMzw18i-I",
+          "mode": "list",
+          "cachedResultName": "Team 6 Dataset - Helpdesk : Tickets / Interactions",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-SvjlBkT-LY_iJtBGZdIRWWtnx6oQnNDDLsMzw18i-I/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Tickets",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-SvjlBkT-LY_iJtBGZdIRWWtnx6oQnNDDLsMzw18i-I/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ticket_id": "={{ $('Loop Over Items (Envoie les tickets un par un )').item.json.ticket_id }}",
+            "auto_priority": "={{ $json.auto_priority }}",
+            "sentiment_label": "={{ $json.sentiment_label }}",
+            "auto_team": "={{ $json.auto_team }}"
+          },
+          "matchingColumns": [
+            "ticket_id"
+          ],
+          "schema": [
+            {
+              "id": "ticket_id",
+              "displayName": "ticket_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ticket_subject",
+              "displayName": "ticket_subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "customer",
+              "displayName": "customer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "customer_email",
+              "displayName": "customer_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "team_name",
+              "displayName": "team_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "priority",
+              "displayName": "priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "create_date",
+              "displayName": "create_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "close_date",
+              "displayName": "close_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "stage_name",
+              "displayName": "stage_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "description_clean",
+              "displayName": "description_clean",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "stage_norm",
+              "displayName": "stage_norm",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "auto_priority",
+              "displayName": "auto_priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sentiment_label",
+              "displayName": "sentiment_label",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "auto_team",
+              "displayName": "auto_team",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1904,
+        -304
+      ],
+      "id": "81770226-7c0c-4cc2-b7c6-51a222563b51",
+      "name": "Update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5WKalPorCPHYl0WM",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "94e8d7e9-33fb-48ac-9f92-c916dcd72be1",
+              "leftValue": "={{ $json.sentiment_label }}",
+              "rightValue": "negative",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "49502c37-4f21-4963-95b1-4a1be81d8703",
+              "leftValue": "={{ $json.auto_priority }}",
+              "rightValue": "Urgent",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2176,
+        -304
+      ],
+      "id": "1a361a7c-a1f9-4ff5-a83d-c7c952d37147",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        2448,
+        -16
+      ],
+      "id": "6f63fae2-5ac0-4e8a-bafb-aca737bdcbf3",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "gO4VtlTKlZkeidGA",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Tu es un assistant support client.\nRédige un email professionnel et rassurant en français pour confirmer la réception d’un ticket.\n\nInfos:\n- Client: {{ $('Get row(s) in sheet').item.json.customer }}\n- Ticket ID: {{$json.ticket_id}}\n- Description: {{ $('Get row(s) in sheet').item.json.description_clean }}\n- Priorité: {{$json.auto_priority}}\n- Équipe: {{$json.auto_team}}\n\nRéponds uniquement en JSON strict :\n{\n  \"email_subject\": \"...\",\n  \"email_body\": \"...\"\n}\n\nContraintes:\n\n- Corps doit commencer par Bonjour {{ $('Get row(s) in sheet').item.json.customer }},\n- Indiquer que l’équipe {{$json.auto_team}} est mobilisée immédiatement.\n- Termine toujours par :\n\nCordialement,  \nL'équipe support.  \nKARIZMA Group\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        2464,
+        -576
+      ],
+      "id": "41819c7d-623b-4bcb-a438-cd81f1431229",
+      "name": "Basic LLM Chain2"
+    },
+    {
+      "parameters": {
+        "jsCode": "let raw = $json.text || '';   // sortie brute du LLM (Grok renvoie dans \"text\")\nraw = raw.replace(/<think>[\\s\\S]*?<\\/think>/g, '').trim();\n\n// Isoler uniquement le dernier bloc JSON { ... }\nconst matches = raw.match(/\\{[\\s\\S]*?\\}/g);\nconst jsonStr = matches ? matches[matches.length - 1] : '{}';\n\nlet parsed = {};\ntry {\n  parsed = JSON.parse(jsonStr);\n} catch (e) {\n  // Fallback minimal en cas de JSON illisible\n  parsed = {\n    email_subject: \"Erreur LLM\",\n    email_body: \"Le modèle n'a pas renvoyé de JSON valide.\"\n  };\n}\n\nreturn [{\n  json: {\n    ...$json,\n    email_subject: parsed.email_subject,\n    email_body: parsed.email_body\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3056,
+        -416
+      ],
+      "id": "023b216e-48c2-41db-b43e-78a88728189a",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "110LEIL8r-CkOx_8ENl2MQkeNrfTLRFCQr4CGw51d8Sk",
+          "mode": "list",
+          "cachedResultName": "emails_teams",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/110LEIL8r-CkOx_8ENl2MQkeNrfTLRFCQr4CGw51d8Sk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Tickets",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/110LEIL8r-CkOx_8ENl2MQkeNrfTLRFCQr4CGw51d8Sk/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3152,
+        -736
+      ],
+      "id": "4d3cf554-98c2-4f5b-b2e4-0b51f25aed1b",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "5WKalPorCPHYl0WM",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let raw = $json.text || '';\nraw = raw.replace(/\\n/g, '').trim();\n\n// Extraire uniquement le dernier JSON { ... }\nconst matches = raw.match(/\\{[\\s\\S]*?\\}/g);\nconst jsonStr = matches ? matches[matches.length - 1] : '{}';\n\nlet parsed = {};\ntry {\n  parsed = JSON.parse(jsonStr);\n} catch (e) {\n  parsed = {\n    email_subject: \"Erreur LLM\",\n    email_body: \"Le modèle n'a pas renvoyé de JSON valide.\"\n  };\n}\n\nreturn [{\n  json: {\n    ...$json,\n    email_subject: parsed.email_subject,\n    email_body: parsed.email_body\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3072,
+        -64
+      ],
+      "id": "810fd136-034b-4d9a-a52d-f04239caeda0",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "fromEmail": "ridaouakrim0@gmail.com",
+        "toEmail": "={{ $json.manager_email }}",
+        "subject": "=\"⚠️ Ticket critique détecté - ID {{ $('If1').item.json.ticket_id }}\"",
+        "emailFormat": "text",
+        "text": "=Détails du ticket critique :\n\n- Ticket ID : {{ $('If1').item.json.ticket_id }}\n- Client : {{ $('Get row(s) in sheet').item.json.customer }}\n- Description : {{ $('Update row in sheet').item.json.description_clean }}\n- Priorité : {{ $('Update row in sheet1').item.json.auto_priority }}\n- Sentiment : {{ $('Update row in sheet1').item.json.sentiment_label }}\n- Équipe assignée : {{ $('Update row in sheet1').item.json.auto_team }}\nMerci d’intervenir rapidement.\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        3408,
+        -560
+      ],
+      "id": "5a2313e9-6178-4674-a56d-bedaf52e49f7",
+      "name": "Send email1",
+      "webhookId": "60041b0d-0fa8-4f8c-b8c3-c85a9193d654",
+      "credentials": {
+        "smtp": {
+          "id": "EF7lQdrT2tGhzGK2",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Tu es un assistant support client.\nRédige un email professionnel et personnalisé en français pour confirmer la réception d’un ticket.\n\nInfos :\n- Client : {{ $('Get row(s) in sheet').item.json.customer }}\n- Ticket ID : {{ $('Get row(s) in sheet').item.json.ticket_id }}\n- Description : {{ $('Update row in sheet').item.json.description_clean }}\n\n\nRéponds uniquement en JSON strict :\n{\n  \"email_subject\": \"...\",\n  \"email_body\": \"...\"\n}\n\nContraintes :\n- Objet doit mentionner le ticket ID et indiquer confirmation de réception.\n- Corps doit commencer par Bonjour {{ $('Get row(s) in sheet').item.json.customer }} ,\n- Reformule la description pour montrer compréhension du problème.\n- Ton rassurant, professionnel et cordial.\n- Termine toujours par :\n\nCordialement,\nL'équipe support.\nKARIZMA Group\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        2560,
+        -256
+      ],
+      "id": "4c4a09de-7c3c-4993-bc36-4200faef9131",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "content": "**Déclenche automatiquement le workflow toutes les 5 minutes.**\n",
+        "height": 80
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        -144
+      ],
+      "id": "bdac17f0-c601-47f8-ba96-ea55cc170994",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "**Condition : stage_norm == new.**\n",
+        "height": 80,
+        "width": 256
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        544,
+        -128
+      ],
+      "id": "481c4dc6-d5dd-4bc2-9ed1-9134be09eaf5",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Analyse du Ticket\n**Appel au LLM gpt-oss-20b pour classifier le ticket.**\n\nDétermine :\nsentiment_label (positive / neutral / negative)\nauto_priority (Low / Medium / High / Urgent)\nauto_team (Intégration 1, Intégration 2, DevOps)",
+        "height": 208,
+        "width": 352
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1232,
+        -480
+      ],
+      "id": "76d05431-3cab-4565-84d0-a2a45a6a5ea8",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        960,
+        -304
+      ],
+      "id": "73aa56ae-4cba-4975-80a3-0db7d0fc20cc",
+      "name": "Loop Over Items (Envoie les tickets un par un )",
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "content": "**Transforme la sortie du LLM en champs exploitables.**",
+        "height": 80
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1824,
+        -368
+      ],
+      "id": "58d1a5e6-cd15-479b-a6d4-9195348a582c",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "**Détection Cas Critique**\n",
+        "height": 80,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2144,
+        -352
+      ],
+      "id": "731b239a-8cf3-49cf-81c6-65a04ca3155d",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "**Génération email**",
+        "height": 80,
+        "width": 160
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2432,
+        -608
+      ],
+      "id": "3494dd4a-32ad-42af-a1f3-dcdbfe1bd642",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "**Envoi au client**",
+        "height": 80,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3376,
+        -320
+      ],
+      "id": "d21fa0d7-a67a-411a-98d0-73858ee4b2c7",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "fromEmail": "ridaouakrim0@gmail.com",
+        "toEmail": "={{ $('Get row(s) in sheet').item.json.customer_email }}",
+        "subject": "={{ $json.email_subject }}",
+        "emailFormat": "text",
+        "text": "={{ $json.email_body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        3408,
+        -288
+      ],
+      "id": "1f1283ab-ad3c-4687-9ba8-724d3c39249b",
+      "name": "Send email",
+      "webhookId": "dfb361cd-af0d-4ab8-82d5-673d0dec0fce",
+      "credentials": {
+        "smtp": {
+          "id": "EF7lQdrT2tGhzGK2",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "**Alerte au chef d’équipe**\n",
+        "height": 80,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3360,
+        -608
+      ],
+      "id": "e98d736c-306c-4849-af2e-b8cf6ea41ded",
+      "name": "Sticky Note8"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items (Envoie les tickets un par un )",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items (Envoie les tickets un par un )",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain2",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain2": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Send email1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send email1": {
+      "main": [
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items (Envoie les tickets un par un )": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send email": {
+      "main": [
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4ad94d34-eaeb-4d42-ac90-afaa4884cb9d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f97a44d1eb764f00f9cd2b81b96f5322cf977757eea29b25582a1411ab01c207"
+  },
+  "id": "OSTC932dhdNBTrTT",
+  "tags": []
+}
