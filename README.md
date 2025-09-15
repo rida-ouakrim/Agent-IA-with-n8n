@@ -37,8 +37,7 @@ Le workflow :
 ---
 
 ## 📷 Aperçu du workflow
-workflow.png
-
+workflow1.PNG
 ---
 
 ## 🛠️ Installation et utilisation
